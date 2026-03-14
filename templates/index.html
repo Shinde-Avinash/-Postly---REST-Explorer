@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}Postly — Dashboard{% endblock %}
+{% block topicon %}🏠{% endblock %}
+{% block toptitle %}Dashboard{% endblock %}
+{% block topactions %}
+  <a href="/api/FetchData" class="btn btn-primary btn-sm">◎ &nbsp;Explore Posts</a>
+{% endblock %}
+
+{% block xstyle %}
+/* ── Hero ── */
+.hero {
+  position: relative; overflow: hidden;
+  border-radius: 18px; margin-bottom: 28px;
+  background: var(--s2); border: 1px solid var(--b1);
+  min-height: 220px; display: flex; align-items: flex-end;
+}
+.hero-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover; object-position: center;
+  opacity: 0.55;
+}
+.hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to right, rgba(8,13,22,0.92) 38%, rgba(8,13,22,0.2) 100%);
+}
+.hero-content { position: relative; z-index: 2; padding: 32px 36px; max-width: 560px; }
+.hero-eyebrow {
+  font-size: 0.62rem; font-weight: 800; letter-spacing: 0.15em;
+  text-transform: uppercase; color: #a5b4fc; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.hero-eyebrow::before { content: ''; width: 20px; height: 1px; background: #a5b4fc; }
+.hero-title {
+  font-size: 1.9rem; font-weight: 800; letter-spacing: -0.8px;
+  line-height: 1.2; margin-bottom: 10px; color: var(--text);
+}
+.hero-title em { font-style: normal; color: #a5b4fc; }
+.hero-sub { font-size: 0.85rem; color: var(--t2); line-height: 1.65; margin-bottom: 20px; max-width: 400px; }
+.hero-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ── Stats ── */
+.section-head { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--t3); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.section-head::after { content: ''; flex: 1; height: 1px; background: var(--b1); }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 10px; margin-bottom: 28px; }
+.scard {
+  background: var(--s1); border: 1px solid var(--b1); border-radius: 12px;
+  padding: 16px 18px; position: relative; overflow: hidden;
+}
+.scard-glow { position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; opacity: 0.12; }
+.scard-glow.v { background: var(--violet); }
+.scard-glow.e { background: var(--emerald); }
+.scard-glow.a { background: var(--amber); }
+.scard-glow.s { background: var(--sky); }
+.scard-icon { font-size: 1.3rem; margin-bottom: 10px; }
+.scard-lbl { font-size: 0.68rem; color: var(--t3); font-weight: 500; margin-bottom: 3px; }
+.scard-val { font-size: 1.7rem; font-weight: 800; color: var(--text); line-height: 1; }
+.scard-sub { font-size: 0.62rem; color: var(--t3); margin-top: 3px; }
+
+/* ── Operations ── */
+.ops-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 10px; }
+.opcard {
+  background: var(--s1); border: 1px solid var(--b1); border-radius: 12px;
+  padding: 18px 20px; text-decoration: none; color: inherit;
+  transition: all 0.17s; display: flex; flex-direction: column; gap: 4px;
+}
+.opcard:hover { border-color: var(--indigo); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(99,102,241,0.13); }
+.opcard-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.opcard-icon { font-size: 1.4rem; }
+.meth { font-size: 0.55rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.06em; }
+.meth-get    { background: rgba(56,189,248,0.15); color: #7dd3fc; }
+.meth-post   { background: rgba(16,185,129,0.15); color: #6ee7b7; }
+.meth-put    { background: rgba(245,158,11,0.15); color: #fcd34d; }
+.meth-delete { background: rgba(244,63,94,0.15);  color: #fda4af; }
+.opcard-name { font-size: 0.88rem; font-weight: 700; color: var(--text); }
+.opcard-desc { font-size: 0.75rem; color: var(--t2); line-height: 1.5; }
+.opcard-tip  { font-size: 0.62rem; color: var(--t3); margin-top: 6px; }
+.opcard-tip kbd { background: var(--s3); border: 1px solid var(--b2); border-radius: 3px; padding: 0 4px; font-family: inherit; }
+{% endblock %}
+
+{% block content %}
+<!-- Hero with image -->
+<div class="hero">
+  <img class="hero-img" src="/public/hero.png" alt="API illustration">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">REST API Explorer</div>
+    <h1 class="hero-title">Explore, <em>Create</em>,<br>Shape your Data.</h1>
+    <p class="hero-sub">A clean, expressive interface for every HTTP operation — browse posts, publish new content, revise drafts, and retire outdated entries.</p>
+    <div class="hero-btns">
+      <a href="/api/FetchData" class="btn btn-primary">◎ &nbsp;Browse Posts</a>
+      <a href="/api/CreateData" class="btn btn-soft">✦ &nbsp;Publish New</a>
+      <a href="/api/UserPosts"  class="btn btn-soft">◉ &nbsp;Browse by Author</a>
+    </div>
+  </div>
+</div>
+
+<!-- Live stats -->
+<div class="section-head">Live API Stats</div>
+<div class="stats-grid">
+  <div class="scard">
+    <div class="scard-glow v"></div>
+    <div class="scard-icon">📝</div>
+    <div class="scard-lbl">Published Posts</div>
+    <div class="scard-val">{{ stats.posts }}</div>
+    <div class="scard-sub">fetched live</div>
+  </div>
+  <div class="scard">
+    <div class="scard-glow e"></div>
+    <div class="scard-icon">👥</div>
+    <div class="scard-lbl">Registered Authors</div>
+    <div class="scard-val">{{ stats.users }}</div>
+    <div class="scard-sub">unique users</div>
+  </div>
+  <div class="scard">
+    <div class="scard-glow a"></div>
+    <div class="scard-icon">💬</div>
+    <div class="scard-lbl">Discussions</div>
+    <div class="scard-val">{{ stats.comments }}</div>
+    <div class="scard-sub">total comments</div>
+  </div>
+  <div class="scard">
+    <div class="scard-glow s"></div>
+    <div class="scard-icon">🗂</div>
+    <div class="scard-lbl">Media Albums</div>
+    <div class="scard-val">{{ stats.albums }}</div>
+    <div class="scard-sub">collections</div>
+  </div>
+</div>
+
+<!-- Operations -->
+<div class="section-head">API Operations</div>
+<div class="ops-grid">
+  <a href="/api/FetchData" class="opcard">
+    <div class="opcard-top"><span class="opcard-icon">◎</span><span class="meth meth-get">GET</span></div>
+    <div class="opcard-name">Explore Posts</div>
+    <div class="opcard-desc">Browse the full post archive — search, sort, and paginate in real time.</div>
+    <div class="opcard-tip">Press <kbd>G</kbd></div>
+  </a>
+  <a href="/api/UserPosts" class="opcard">
+    <div class="opcard-top"><span class="opcard-icon">◉</span><span class="meth meth-get">GET</span></div>
+    <div class="opcard-name">Author Profiles</div>
+    <div class="opcard-desc">Select any of the 10 authors and read every post tied to their account.</div>
+  </a>
+  <a href="/api/CreateData" class="opcard">
+    <div class="opcard-top"><span class="opcard-icon">✦</span><span class="meth meth-post">POST</span></div>
+    <div class="opcard-name">Publish a Post</div>
+    <div class="opcard-desc">Craft a title, write your body content, assign it to an author and submit.</div>
+    <div class="opcard-tip">Press <kbd>C</kbd></div>
+  </a>
+  <a href="/api/UpdateData" class="opcard">
+    <div class="opcard-top"><span class="opcard-icon">◈</span><span class="meth meth-put">PUT</span></div>
+    <div class="opcard-name">Revise a Post</div>
+    <div class="opcard-desc">Load any post by ID, then fully replace it (PUT) or patch specific fields (PATCH).</div>
+    <div class="opcard-tip">Press <kbd>U</kbd></div>
+  </a>
+  <a href="/api/DeleteData" class="opcard">
+    <div class="opcard-top"><span class="opcard-icon">◌</span><span class="meth meth-delete">DEL</span></div>
+    <div class="opcard-name">Retire a Post</div>
+    <div class="opcard-desc">Preview the post before permanently removing it — a two-step safety flow.</div>
+    <div class="opcard-tip">Press <kbd>D</kbd></div>
+  </a>
+</div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Postly — Revise Post{% endblock %}
+{% block topicon %}✏️{% endblock %}
+{% block toptitle %}Revise a Post{% endblock %}
+{% block topactions %}
+  <a href="/api/FetchData" class="btn btn-soft btn-sm">← Archive</a>
+{% endblock %}
+
+{% block xstyle %}
+.step-card { background:var(--s1); border:1px solid var(--b1); border-radius:14px; overflow:hidden; max-width:660px; margin-bottom:20px; }
+.step-head { padding:14px 20px; border-bottom:1px solid var(--b1); display:flex; align-items:center; gap:12px; }
+.step-num  { width:22px; height:22px; border-radius:50%; background:var(--indigo); color:#fff; font-size:0.68rem; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.step-head h3   { font-size:0.85rem; font-weight:700; color:var(--text); }
+.step-head small{ font-size:0.72rem; color:var(--t3); }
+.step-body { padding:20px; }
+.lookup-row { display:flex; gap:8px; align-items:flex-end; }
+.lookup-row .finput { max-width:160px; }
+
+/* Method toggle */
+.mtoggle { display:flex; gap:8px; margin-bottom:16px; }
+.mopt { flex:1; padding:9px 12px; border-radius:8px; border:1px solid var(--b2); background:var(--s2); color:var(--t2); font-family:'Inter',sans-serif; font-size:0.8rem; font-weight:600; cursor:pointer; text-align:center; transition:all 0.15s; }
+.mopt.sel-put   { border-color:var(--violet);  background:rgba(124,110,255,0.12); color:#c4b5fd; }
+.mopt.sel-patch { border-color:var(--sky);     background:rgba(56,189,248,0.10); color:#7dd3fc; }
+.mhint { font-size:0.72rem; color:var(--t3); background:var(--s2); border:1px solid var(--b1); border-radius:7px; padding:9px 13px; margin-bottom:16px; line-height:1.5; }
+
+.fgrid { display:grid; gap:14px; }
+.form-shell-foot { padding:14px 20px; border-top:1px solid var(--b1); background:var(--s2); display:flex; gap:8px; }
+{% endblock %}
+
+{% block content %}
+<!-- Step 1: Look up -->
+<div class="step-card">
+  <div class="step-head">
+    <span class="step-num">1</span>
+    <div><h3>Locate the post</h3><small>Enter its ID to load current data</small></div>
+  </div>
+  <div class="step-body">
+    <form method="GET" action="/api/UpdateData">
+      <div class="lookup-row">
+        <div>
+          <label class="flabel" for="sid">Post ID</label>
+          <input class="finput" type="number" id="sid" name="id" value="{{ post.id if post else '' }}" placeholder="1 – 100" min="1" max="100" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">◈ &nbsp;Load Post</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Step 2: Edit (shown when post loaded) -->
+{% if post %}
+<div class="step-card">
+  <div class="step-head">
+    <span class="step-num">2</span>
+    <div><h3>Revise Post #{{ post.id }}</h3><small>Choose your method, edit fields, then save</small></div>
+  </div>
+  <div class="step-body">
+    <!-- Method toggle -->
+    <div class="mtoggle">
+      <div class="mopt sel-put" id="bput"  onclick="setM('PUT')">PUT — Full Replace</div>
+      <div class="mopt"         id="bpatch" onclick="setM('PATCH')">PATCH — Partial Update</div>
+    </div>
+    <div class="mhint" id="mh"><strong style="color:var(--t2)">PUT</strong> — replaces the entire resource. All fields are sent.</div>
+
+    <form method="POST" action="/api/UpdateData">
+      <input type="hidden" name="post_id" value="{{ post.id }}">
+      <input type="hidden" name="method"  id="mf" value="PUT">
+      <div class="fgrid">
+        <div>
+          <label class="flabel" for="title">Title</label>
+          <input class="finput" type="text" id="title" name="title" value="{{ post.title }}" placeholder="Post title…">
+        </div>
+        <div>
+          <label class="flabel" for="body">Body</label>
+          <textarea class="finput" id="body" name="body">{{ post.body }}</textarea>
+        </div>
+        <div>
+          <label class="flabel" for="userId">Author ID</label>
+          <input class="finput" type="number" id="userId" name="userId" value="{{ post.userId }}" min="1" max="10" style="max-width:120px">
+        </div>
+      </div>
+  </div>
+  <div class="form-shell-foot">
+    <button type="submit" class="btn btn-primary">
+      <span class="spin"></span><span class="btxt" id="sbtn">◈ &nbsp;Save (PUT)</span>
+    </button>
+    <a href="/api/UpdateData" class="btn btn-soft">Reset</a>
+  </div>
+  </form>
+</div>
+{% endif %}
+
+<script>
+function setM(m){
+  document.getElementById('mf').value = m;
+  var bp=document.getElementById('bput'), bq=document.getElementById('bpatch');
+  var mh=document.getElementById('mh'), sb=document.getElementById('sbtn');
+  if(m==='PUT'){
+    bp.className='mopt sel-put'; bq.className='mopt';
+    mh.innerHTML='<strong style="color:var(--t2)">PUT</strong> — replaces the entire resource. All fields are sent.';
+    sb.textContent='◈  Save (PUT)';
+  } else {
+    bp.className='mopt'; bq.className='mopt sel-patch';
+    mh.innerHTML='<strong style="color:var(--t2)">PATCH</strong> — only supplied fields are updated. Leave blank to keep existing values.';
+    sb.textContent='◈  Save (PATCH)';
+  }
+}
+</script>
+{% endblock %}

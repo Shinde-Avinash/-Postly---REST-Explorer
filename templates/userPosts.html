@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Postly — Author Posts{% endblock %}
+{% block topicon %}👤{% endblock %}
+{% block toptitle %}Browse by Author{% endblock %}
+{% block topactions %}
+  {% if posts %}<span class="pill">{{ posts|length }} posts</span>{% endif %}
+  <a href="/api/FetchData" class="btn btn-soft btn-sm">← All Posts</a>
+{% endblock %}
+
+{% block xstyle %}
+.author-rail { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:22px; }
+.apill { display:inline-flex; align-items:center; gap:5px; padding:6px 14px; border-radius:999px; font-size:0.78rem; font-weight:600; text-decoration:none; border:1px solid var(--b2); background:var(--s1); color:var(--t2); transition:all 0.14s; }
+.apill:hover { border-color:var(--indigo); color:#a5b4fc; }
+.apill.on { background:rgba(99,102,241,0.16); border-color:var(--indigo); color:#a5b4fc; }
+.apill small { font-size:0.6rem; color:var(--t3); font-weight:400; }
+
+.pgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:10px; }
+.ptile { background:var(--s1); border:1px solid var(--b1); border-radius:12px; padding:16px 18px; transition:all 0.16s; display:flex; flex-direction:column; gap:8px; }
+.ptile:hover { border-color:var(--indigo); transform:translateY(-2px); box-shadow:0 6px 22px rgba(99,102,241,0.12); }
+.ptile-id { font-size:0.62rem; font-weight:800; color:#a5b4fc; background:rgba(99,102,241,0.12); padding:1px 7px; border-radius:4px; width:fit-content; }
+.ptile-title { font-size:0.85rem; font-weight:700; color:var(--text); line-height:1.35; text-transform:capitalize; flex:1; }
+.ptile-body  { font-size:0.75rem; color:var(--t2); line-height:1.6; }
+.ptile-foot  { display:flex; gap:5px; padding-top:10px; border-top:1px solid var(--b1); margin-top:auto; }
+
+.ph { text-align:center; padding:70px 0; color:var(--t3); font-size:0.85rem; }
+{% endblock %}
+
+{% block content %}
+<div style="background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:16px 18px;margin-bottom:20px;">
+  <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);margin-bottom:10px;">Select Author</div>
+  <div class="author-rail">
+    {% for uid in range(1, 11) %}
+    <a href="/api/UserPosts?userId={{ uid }}" class="apill {% if selected_user==uid %}on{% endif %}">
+      ◉ &nbsp;Author {{ uid }}
+      {% if selected_user==uid and posts %}<small>{{ posts|length }}</small>{% endif %}
+    </a>
+    {% endfor %}
+  </div>
+</div>
+
+{% if posts %}
+  <div class="pgrid">
+    {% for post in posts %}
+    <div class="ptile">
+      <span class="ptile-id">#{{ post.id }}</span>
+      <div class="ptile-title">{{ post.title }}</div>
+      <p class="ptile-body">{{ post.body[:90] }}…</p>
+      <div class="ptile-foot">
+        <a href="/api/PostDetail/{{ post.id }}" class="btn btn-soft btn-sm">Read</a>
+        <a href="/api/UpdateData?id={{ post.id }}" class="btn btn-soft btn-sm">Edit</a>
+        <a href="/api/DeleteData?id={{ post.id }}" class="btn btn-sm" style="background:rgba(244,63,94,0.1);border:1px solid rgba(244,63,94,0.25);color:#fda4af;">Del</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% elif selected_user %}
+  <div class="ph">No posts found for Author {{ selected_user }}.</div>
+{% else %}
+  <div class="ph">Select an author above to browse their published posts.</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}Postly — Explore Posts{% endblock %}
+{% block topicon %}📋{% endblock %}
+{% block toptitle %}Explore Posts{% endblock %}
+{% block topactions %}
+  <span class="pill">{{ total }} entries</span>
+  <a href="/api/CreateData" class="btn btn-primary btn-sm">✦ &nbsp;Publish New</a>
+{% endblock %}
+
+{% block xstyle %}
+.toolbar { display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; align-items:center; }
+.search-wrap { position:relative; flex:1; min-width:180px; max-width:340px; }
+.search-wrap .finput { padding-left:34px; }
+.s-ico { position:absolute; left:11px; top:50%; transform:translateY(-50%); color:var(--t3); font-size:0.8rem; pointer-events:none; }
+.toolbar select.finput { width:auto; }
+.rcount { font-size:0.72rem; color:var(--t3); margin-left:auto; white-space:nowrap; }
+
+.chips { display:flex; gap:8px; margin-bottom:18px; }
+.chip  { background:var(--s1); border:1px solid var(--b1); border-radius:8px; padding:8px 14px; text-align:center; }
+.chip-lbl { font-size:0.62rem; color:var(--t3); }
+.chip-val { font-size:1rem; font-weight:800; color:var(--text); }
+
+.posts { display:flex; flex-direction:column; gap:8px; }
+.prow {
+  background:var(--s1); border:1px solid var(--b1); border-radius:11px;
+  padding:14px 16px; display:grid; grid-template-columns:44px 1fr auto;
+  gap:12px; align-items:center; transition:all 0.16s;
+}
+.prow:hover { border-color:var(--indigo); transform:translateX(3px); box-shadow:-4px 0 0 var(--indigo); }
+.pid { width:44px; height:44px; background:var(--s3); border:1px solid var(--b2); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:0.68rem; font-weight:800; color:#a5b4fc; flex-shrink:0; }
+.ptitle { font-size:0.88rem; font-weight:600; color:var(--text); text-transform:capitalize; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:500px; }
+.pbody  { font-size:0.75rem; color:var(--t2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:500px; }
+.pacts  { display:flex; gap:5px; flex-shrink:0; }
+
+.nodata { text-align:center; padding:60px; color:var(--t3); font-size:0.85rem; }
+
+/* Pagination */
+.pgwrap { margin-top:24px; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.pginfo { font-size:0.72rem; color:var(--t3); }
+.pg { display:flex; gap:4px; flex-wrap:wrap; justify-content:center; }
+.pb { text-decoration:none; min-width:32px; height:32px; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:600; border:1px solid var(--b2); background:var(--s1); color:var(--t2); transition:all 0.14s; padding:0 8px; }
+.pb:hover:not(.off) { background:var(--s3); color:var(--text); }
+.pb.on  { background:var(--indigo); border-color:transparent; color:#fff; box-shadow:0 3px 10px rgba(99,102,241,0.4); }
+.pb.off { opacity:0.25; pointer-events:none; }
+.ellip  { color:var(--t3); padding:0 2px; line-height:32px; font-size:0.85rem; }
+{% endblock %}
+
+{% block content %}
+<div class="chips">
+  <div class="chip"><div class="chip-lbl">Total</div><div class="chip-val">{{ total }}</div></div>
+  <div class="chip"><div class="chip-lbl">Page</div><div class="chip-val">{{ page }}/{{ total_pages }}</div></div>
+  <div class="chip"><div class="chip-lbl">Showing</div><div class="chip-val">{{ posts|length }}</div></div>
+</div>
+
+<div class="toolbar">
+  <div class="search-wrap">
+    <span class="s-ico">◎</span>
+    <input class="finput" type="text" id="q" placeholder="Search title or body…">
+  </div>
+  <select class="finput" id="srt">
+    <option value="id-asc">ID ↑</option>
+    <option value="id-desc">ID ↓</option>
+    <option value="title-asc">Title A→Z</option>
+    <option value="title-desc">Title Z→A</option>
+  </select>
+  <span class="rcount" id="rc">{{ posts|length }} visible</span>
+</div>
+
+<div class="posts" id="pl">
+  {% for post in posts %}
+  <div class="prow" data-title="{{ post.title|lower }}" data-body="{{ post.body|lower }}" data-id="{{ post.id }}">
+    <div class="pid">#{{ post.id }}</div>
+    <div>
+      <div class="ptitle">{{ post.title }}</div>
+      <div class="pbody">{{ post.body[:100] }}</div>
+    </div>
+    <div class="pacts">
+      <a href="/api/PostDetail/{{ post.id }}" class="btn btn-soft btn-sm">Read</a>
+      <a href="/api/UpdateData?id={{ post.id }}" class="btn btn-soft btn-sm">Edit</a>
+      <a href="/api/DeleteData?id={{ post.id }}" class="btn btn-sm" style="background:rgba(244,63,94,0.1);border:1px solid rgba(244,63,94,0.25);color:#fda4af;">Del</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<div class="nodata" id="nd" style="display:none">Nothing matches — try a different search.</div>
+
+{% if total_pages > 1 %}
+<div class="pgwrap">
+  <div class="pginfo">Showing {{ (page-1)*10+1 }}–{{ last_record }} of {{ total }}</div>
+  <div class="pg">
+    {% if page>1 %}<a href="?page={{ page-1 }}" class="pb">← Prev</a>{% else %}<span class="pb off">← Prev</span>{% endif %}
+    {% for p in visible_pages %}
+      {% if not loop.first and p > visible_pages[loop.index0-1]+1 %}<span class="ellip">…</span>{% endif %}
+      <a href="?page={{ p }}" class="pb {% if p==page %}on{% endif %}">{{ p }}</a>
+    {% endfor %}
+    {% if page<total_pages %}<a href="?page={{ page+1 }}" class="pb">Next →</a>{% else %}<span class="pb off">Next →</span>{% endif %}
+  </div>
+</div>
+{% endif %}
+
+<script>
+(function(){
+  var q=document.getElementById('q'), srt=document.getElementById('srt');
+  var pl=document.getElementById('pl'), nd=document.getElementById('nd');
+  var rc=document.getElementById('rc'), total={{ total }};
+  function cards(){ return [].slice.call(pl.querySelectorAll('.prow')); }
+  function run(){
+    var qv=q.value.toLowerCase(), sf=srt.value.split('-')[0], sd=srt.value.split('-')[1];
+    var vis=[];
+    cards().forEach(function(c){
+      var ok=!qv||c.dataset.title.includes(qv)||c.dataset.body.includes(qv);
+      c.style.display=ok?'':'none'; if(ok) vis.push(c);
+    });
+    vis.sort(function(a,b){
+      var av=sf==='id'?+a.dataset.id:a.dataset.title;
+      var bv=sf==='id'?+b.dataset.id:b.dataset.title;
+      return sd==='asc'?(av>bv?1:-1):(av<bv?1:-1);
+    });
+    vis.forEach(function(c){pl.appendChild(c);});
+    nd.style.display=vis.length?'none':'';
+    rc.textContent=vis.length+' visible';
+  }
+  q.addEventListener('input',run); srt.addEventListener('change',run);
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Postly — Publish Post{% endblock %}
+{% block topicon %}✍️{% endblock %}
+{% block toptitle %}Publish a New Post{% endblock %}
+{% block topactions %}
+  <a href="/api/FetchData" class="btn btn-soft btn-sm">← Back to Archive</a>
+{% endblock %}
+
+{% block xstyle %}
+.form-shell {
+  max-width: 600px;
+  background: var(--s1); border: 1px solid var(--b1);
+  border-radius: 14px; overflow: hidden;
+}
+.form-shell-head {
+  padding: 18px 24px; border-bottom: 1px solid var(--b1);
+  display: flex; align-items: center; gap: 10px;
+}
+.form-shell-head h2 { font-size: 0.9rem; font-weight: 700; color: var(--text); }
+.form-shell-head p  { font-size: 0.75rem; color: var(--t2); margin-top: 2px; }
+.tag-post-lg { background: rgba(16,185,129,0.14); color: #6ee7b7; font-size: 0.62rem; font-weight: 800; padding: 3px 9px; border-radius: 6px; letter-spacing: 0.08em; }
+.form-body { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.fgroup {}
+.form-foot { padding: 16px 24px; border-top: 1px solid var(--b1); display: flex; align-items: center; gap: 10px; background: var(--s2); }
+{% endblock %}
+
+{% block content %}
+<div class="form-shell">
+  <div class="form-shell-head">
+    <span class="tag-post-lg">POST</span>
+    <div>
+      <h2>Write &amp; Publish</h2>
+      <p>Submits to <code style="color:var(--t3);font-size:0.72rem">POST /posts</code> → JSONPlaceholder</p>
+    </div>
+  </div>
+  <form method="POST">
+    <div class="form-body">
+      <div class="fgroup">
+        <label class="flabel" for="title">Post Title</label>
+        <input class="finput" type="text" id="title" name="title"
+               placeholder="A compelling headline…" required>
+      </div>
+      <div class="fgroup">
+        <label class="flabel" for="body">Body Content</label>
+        <textarea class="finput" id="body" name="body"
+                  placeholder="Tell your story…" required></textarea>
+      </div>
+      <div class="fgroup">
+        <label class="flabel" for="userId">Author ID</label>
+        <input class="finput" type="number" id="userId" name="userId"
+               placeholder="1–10" min="1" max="10" required>
+        <div class="fhint">Users 1–10 are available on JSONPlaceholder.</div>
+      </div>
+    </div>
+    <div class="form-foot">
+      <button type="submit" class="btn btn-primary">
+        <span class="spin"></span>
+        <span class="btxt">✦ &nbsp;Publish Post</span>
+      </button>
+      <a href="/api/FetchData" class="btn btn-soft">Discard</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
